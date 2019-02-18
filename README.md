@@ -1,6 +1,6 @@
 # openlayers在vue项目下的使用
 
-## 初始化
+## 一、初始化
 1. `vue create vue-openlayers`
 2. 移除vue 初始创建的一些不用的文件,如`assets`,`views`和`components`等目录下的文件
 3. `src/views/MainMap.vue`和`assets/style.styl`样式准备, 当然`main.js`中要引入样式`import './assets/css/style.styl'`
@@ -25,7 +25,7 @@
 ```
 4. `yarn add -D stylus stylus-loader`（因为使用了stylus）
 
-## 加入openlayers
+## 二、加入openlayers
 + [openlayers官方网址](https://openlayers.org/)
 + [openlayers的几个主要概念](https://openlayers.org/en/latest/doc/tutorials/concepts.html)
   1. Map(ol/Map) 是openlayers是主要组成,由一个页面元素承载
@@ -126,7 +126,7 @@ data() {
     }
 },
 ```
-+ 建立一个地图的配置文件`src/mapconfig.js`,方便以后在配置文件中修改
+## 三、建立一个地图的配置文件`src/mapconfig.js`,方便以后在配置文件中修改
 ```javascript
 
 var streetmaponline = 'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer',   //在线街景
@@ -159,5 +159,97 @@ export {
   linecolor,
   linewidth
 }
+```
+`MainMap.vue`中引入并使用配置文件
+```javascript
+import { projection, centerx, centery, zoom, mapmode } from '../mapconfig'
 
+data() {
+    return {
+        map: null,
+        view: new View({
+            projection,
+            center: [centerx, centery],
+            zoom
+        })
+    }
+},
+```
+## 四、把图层也提取到data上,方便作街景和影像和切换
+1. 修改`MainMap.vue`
+```javascript
+import { projection, centerx, centery, zoom, streetmapurl, imagemapurl, mapmode } from '../mapconfig'
+
+data() {
+    return {
+        basemap:null
+    }
+},
+initMap() {
+    if (mapmode == 0) {  //如果是离线
+        this.basemap = new TileLayer({
+            source: new XYZ({
+                projection: 'EPSG:3857',
+                url: streetmapurl
+            })
+        })
+    } else {
+        this.basemap = new TileLayer({
+            source: new TileArcGISRest({
+                url: streetmapurl
+            })
+        })
+    }
+    const map = new Map({
+        target: this.$refs.map,
+        layers: [ this.basemap ],
+        view: this.view
+    })
+    this.map = map
+}
+```
+## 五、街景和影像切换
+```javascript
+changemap() { //切换街景和影像地图
+    var mapname = this.$refs.maptypetext.innerHTML                
+    this.map.removeLayer(this.basemap)
+    if (mapname == '街景') { 
+        if(mapmode === 0) {  //如果是离线
+            this.basemap = new TileLayer({
+                source: new XYZ({
+                    tileSize: 256,
+                    projection: 'EPSG:3857',
+                    url: imagemapurl
+                })
+            }) 
+        } else {
+            this.basemap = new TileLayer({
+                source: new TileArcGISRest({
+                    url: imagemapurl
+                })
+            })
+        }                        
+        this.$refs.maptypetext.innerHTML='影像'
+        this.$refs.maptype.style.backgroundPosition = "0 -60px";
+    } else if (mapname == '影像') {
+        if(mapmode === 0) {  //如果是离线
+            this.basemap = new TileLayer({
+                source: new XYZ({
+                    tileSize: 256,
+                    projection: 'EPSG:3857',
+                    url: streetmapurl
+                })
+            })
+        } else {
+            this.basemap = new TileLayer({
+                source: new TileArcGISRest({
+                    url: streetmapurl
+                })
+            })
+        }                     
+        this.$refs.maptypetext.innerHTML='街景'
+        this.$refs.maptype.style.backgroundPosition = "0 0";
+    }
+    this.map.addLayer(this.basemap)
+}
 ```
