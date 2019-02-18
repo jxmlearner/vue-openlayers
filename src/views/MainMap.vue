@@ -12,7 +12,6 @@
     import {Map,View} from 'ol'
     import TileLayer from 'ol/layer/Tile'
     import TileArcGISRest from 'ol/source/TileArcGISRest'
-    import OSM from 'ol/source/OSM'
     import XYZ from 'ol/source/XYZ'
     import { projection, centerx, centery, zoom, streetmapurl, imagemapurl, mapmode } from '../mapconfig'
     export default {
