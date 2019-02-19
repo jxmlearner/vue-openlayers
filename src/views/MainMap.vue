@@ -23,7 +23,8 @@
                     center: [centerx, centery],
                     zoom
                 }),
-                basemap: null
+                streetmapLayer:null,        //街景图层
+                imagemapLayer: null         //影像图层
             }
         },
         mounted() {
@@ -32,67 +33,56 @@
         methods: {
             initMap() {  //初始化地图
                 if (mapmode == 0) {  //如果是离线
-                    this.basemap = new TileLayer({
+                    this.streetmapLayer = new TileLayer({
+                        preload: Infinity,
                         source: new XYZ({
                             projection: 'EPSG:3857',
                             url: streetmapurl
                         })
                     })
-                } else {
-                    this.basemap = new TileLayer({
+                    this.imagemapLayer = new TileLayer({
+                        visible: false,
+                        preload: Infinity,
+                        source: new XYZ({
+                            projection: 'EPSG:3857',
+                            url: imagemapurl
+                        })
+                    })
+                } else {  //如果是在线使用ArcGIS的在线地图服务
+                    this.streetmapLayer = new TileLayer({
+                        preload: Infinity,
                         source: new TileArcGISRest({
                             url: streetmapurl
+                        })
+                    })
+                    this.imagemapLayer = new TileLayer({
+                        visible: false,
+                        preload: Infinity,
+                        source: new TileArcGISRest({
+                            url: imagemapurl
                         })
                     })
                 }
                 const map = new Map({
                     target: this.$refs.map,
-                    layers: [ this.basemap ],
+                    layers: [ this.streetmapLayer,this.imagemapLayer ],
                     view: this.view
                 })
                 this.map = map
             },
             changemap() { //切换街景和影像地图
-                var mapname = this.$refs.maptypetext.innerHTML                
-                this.map.removeLayer(this.basemap)
+                var mapname = this.$refs.maptypetext.innerHTML      
                 if (mapname == '街景') { 
-                    if(mapmode === 0) {  //如果是离线
-                        this.basemap = new TileLayer({
-                            source: new XYZ({
-                                tileSize: 256,
-                                projection: 'EPSG:3857',
-                                url: imagemapurl
-                            })
-                        }) 
-                    } else {
-                        this.basemap = new TileLayer({
-                            source: new TileArcGISRest({
-                                url: imagemapurl
-                            })
-                        })
-                    }                        
+                    this.imagemapLayer.setVisible(true)
+                    this.streetmapLayer.setVisible(false)                        
                     this.$refs.maptypetext.innerHTML='影像'
                     this.$refs.maptype.style.backgroundPosition = "0 -60px";
                 } else if (mapname == '影像') {
-                    if(mapmode === 0) {  //如果是离线
-                        this.basemap = new TileLayer({
-                            source: new XYZ({
-                                tileSize: 256,
-                                projection: 'EPSG:3857',
-                                url: streetmapurl
-                            })
-                        })
-                    } else {
-                        this.basemap = new TileLayer({
-                            source: new TileArcGISRest({
-                                url: streetmapurl
-                            })
-                        })
-                    }                     
+                    this.streetmapLayer.setVisible(true)
+                    this.imagemapLayer.setVisible(false)                                          
                     this.$refs.maptypetext.innerHTML='街景'
                     this.$refs.maptype.style.backgroundPosition = "0 0";
                 }
-                this.map.addLayer(this.basemap)
             }
         }
     }

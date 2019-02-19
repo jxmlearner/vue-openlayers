@@ -253,3 +253,63 @@ changemap() { //切换街景和影像地图
     this.map.addLayer(this.basemap)
 }
 ```
+## 五、街景和影像切换用另外的方式实现
++ 四中的方式每次都要删除然后再增加新图层,性能上可能不是特别好,预加载,显示和隐藏的方式好点
+```javascript
+methods: {
+    initMap() {  //初始化地图
+        if (mapmode == 0) {  //如果是离线
+            this.streetmapLayer = new TileLayer({
+                preload: Infinity,
+                source: new XYZ({
+                    projection: 'EPSG:3857',
+                    url: streetmapurl
+                })
+            })
+            this.imagemapLayer = new TileLayer({
+                visible: false,
+                preload: Infinity,
+                source: new XYZ({
+                    projection: 'EPSG:3857',
+                    url: imagemapurl
+                })
+            })
+        } else {  //如果是在线使用ArcGIS的在线地图服务
+            this.streetmapLayer = new TileLayer({
+                preload: Infinity,
+                source: new TileArcGISRest({
+                    url: streetmapurl
+                })
+            })
+            this.imagemapLayer = new TileLayer({
+                visible: false,
+                preload: Infinity,
+                source: new TileArcGISRest({
+                    url: imagemapurl
+                })
+            })
+        }
+        const map = new Map({
+            target: this.$refs.map,
+            layers: [ this.streetmapLayer,this.imagemapLayer ],
+            view: this.view
+        })
+        this.map = map
+    },
+    changemap() { //切换街景和影像地图
+        var mapname = this.$refs.maptypetext.innerHTML      
+        if (mapname == '街景') { 
+            this.imagemapLayer.setVisible(true)
+            this.streetmapLayer.setVisible(false)                        
+            this.$refs.maptypetext.innerHTML='影像'
+            this.$refs.maptype.style.backgroundPosition = "0 -60px";
+        } else if (mapname == '影像') {
+            this.streetmapLayer.setVisible(true)
+            this.imagemapLayer.setVisible(false)                                          
+            this.$refs.maptypetext.innerHTML='街景'
+            this.$refs.maptype.style.backgroundPosition = "0 0";
+        }
+    }
+}
+```
+
