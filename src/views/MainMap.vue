@@ -1,7 +1,11 @@
 <template>
     <div class="map-container">
         <div class="map" ref="map"></div>
-        <div class="maptype" @click="changemap" ref="maptype">
+        <div class="maptools">
+            <a @click="drawRectangle"><i class="iconfont icon-rectangle"></i>画矩形</a>
+            <a @click="clearDraw"><i class="iconfont icon-custom-clear"></i>清除</a>
+        </div>
+        <div class="maptype" @click="changemap" ref="maptype"> <!-- 右下角街景和影像地图切换 -->
             <span ref="maptypetext">街景</span>
         </div>
     </div>
@@ -11,8 +15,11 @@
     import 'ol/ol.css'
     import {Map,View} from 'ol'
     import TileLayer from 'ol/layer/Tile'
+    import VectorLayer from 'ol/layer/Vector'
     import TileArcGISRest from 'ol/source/TileArcGISRest'
     import XYZ from 'ol/source/XYZ'
+    import { Vector as VectorSource } from 'ol/source'
+    import Draw, { createBox } from 'ol/interaction/Draw'
     import { projection, centerx, centery, zoom, streetmapurl, imagemapurl, mapmode } from '../mapconfig'
     export default {
         data() {
@@ -23,6 +30,8 @@
                     center: [centerx, centery],
                     zoom
                 }),
+                drawSource: new VectorSource({}),
+                drawLayer: null,
                 streetmapLayer:null,        //街景图层
                 imagemapLayer: null         //影像图层
             }
@@ -63,9 +72,12 @@
                         })
                     })
                 }
+                this.drawLayer = new VectorLayer({
+                    source: this.drawSource
+                })
                 const map = new Map({
                     target: this.$refs.map,
-                    layers: [ this.streetmapLayer,this.imagemapLayer ],
+                    layers: [ this.streetmapLayer,this.imagemapLayer, this.drawLayer ],
                     view: this.view
                 })
                 this.map = map
@@ -83,6 +95,34 @@
                     this.$refs.maptypetext.innerHTML='街景'
                     this.$refs.maptype.style.backgroundPosition = "0 0";
                 }
+            },
+            drawRectangle() {
+                this.drawSource.clear()   //先清除掉原来画的
+                if(!this.draw) {
+                    const draw = new Draw({
+                        source: this.drawSource,
+                        type: 'Circle',
+                        geometryFunction: createBox()
+                    })
+                    this.draw = draw
+                    let _this = this
+                    this.draw.on('drawend', function(event) {
+                        var feat = event.feature;
+                        var geometry = feat.getGeometry();
+                        var coords = geometry.getCoordinates();  //获取取经纬度坐标点
+                        console.log(coords)
+                        //var smoothened = makeSmooth(coords, parseInt(numIterations.value, 10) || 5);
+                        //geometry.setCoordinates(smoothened);
+                        if (geometry.intersectsCoordinate([119.3978, 32.3955])) {  //判断某个坐标点是否处在所画的矩形区域之中
+                            console.log('[119.3978, 32.3955]处在你画的区域之中')
+                        }
+                        _this.map.removeInteraction(_this.draw)
+                    })
+                }                
+                this.map.addInteraction(this.draw)                                
+            },
+            clearDraw() {
+                this.drawSource.clear()
             }
         }
     }
@@ -117,6 +157,46 @@
         padding: 0 3px;
         line-height: 20px;
         background: #3385FF;
+    }
+}
+.maptools {
+    position: absolute;
+    left: 50px;
+    top: 10px;
+    z-index: 2;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    padding: 3px 8px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 2px;
+    box-shadow: 1px 2px 1px rgba(0,0,0,.15);
+    a {
+        line-height: 26px;
+        cursor: pointer;
+        color: #4c4c4c;
+        padding: 0 5px;
+        margin-right: 1px;
+        position: relative;
+        user-select: none;
+        &:hover {
+            color: #3385FF;
+        }
+        &:last-child {
+            margin-right: 0;
+            &:after {
+                border-right: none;
+            }
+        }
+        &:after {
+            content:'';
+            position: absolute;
+            height: 60%;
+            top: 20%;
+            right: -1px;
+            border-right: 1px solid #ddd;
+        }
+        i { margin-right: 2px;}
     }
 }
 </style>

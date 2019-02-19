@@ -312,4 +312,43 @@ methods: {
     }
 }
 ```
+## 六、画矩形框
+1. 页面工具条布局和样式
+2. [参照1](https://openlayers.org/en/latest/examples/chaikin.html),[参照2](https://openlayers.org/en/latest/examples/draw-shapes.html?q=draw)
+3. 主要代码
+```javascript
+import VectorLayer from 'ol/layer/Vector'
+import { Vector as VectorSource } from 'ol/source'
+import Draw, { createBox } from 'ol/interaction/Draw'
 
+methods: {
+    drawRectangle() {
+        this.drawSource.clear()   //先清除掉原来画的
+        if(!this.draw) {
+            const draw = new Draw({
+                source: this.drawSource,
+                type: 'Circle',
+                geometryFunction: createBox()
+            })
+            this.draw = draw
+            let _this = this
+            this.draw.on('drawend', function(event) {
+                var feat = event.feature;
+                var geometry = feat.getGeometry();
+                var coords = geometry.getCoordinates();  //获取取经纬度坐标点
+                console.log(coords)
+                //var smoothened = makeSmooth(coords, parseInt(numIterations.value, 10) || 5);
+                //geometry.setCoordinates(smoothened);
+                if (geometry.intersectsCoordinate([119.3978, 32.3955])) {  //判断某个坐标点是否处在所画的矩形区域之中
+                    console.log('[119.3978, 32.3955]处在你画的区域之中')
+                }
+                _this.map.removeInteraction(_this.draw)
+            })
+        }                
+        this.map.addInteraction(this.draw)                                
+    },
+    clearDraw() {
+        this.drawSource.clear()
+    }
+}
+```
