@@ -253,8 +253,8 @@ changemap() { //切换街景和影像地图
     this.map.addLayer(this.basemap)
 }
 ```
-## 五、街景和影像切换用另外的方式实现
-+ 四中的方式每次都要删除然后再增加新图层,性能上可能不是特别好,预加载,显示和隐藏的方式好点
+## 六、街景和影像切换用另外的方式实现
++ 五中的方式每次都要删除然后再增加新图层,性能上可能不是特别好,预加载,显示和隐藏的方式好点
 ```javascript
 methods: {
     initMap() {  //初始化地图
@@ -312,7 +312,7 @@ methods: {
     }
 }
 ```
-## 六、画矩形框
+## 七、画矩形框
 1. 页面工具条布局和样式
 2. [参照1](https://openlayers.org/en/latest/examples/chaikin.html),[参照2](https://openlayers.org/en/latest/examples/draw-shapes.html?q=draw)
 3. 主要代码
@@ -349,6 +349,114 @@ methods: {
     },
     clearDraw() {
         this.drawSource.clear()
+    }
+}
+```
+
+## 八、加载异步数据
+1. `yarn add axios qs`
+2. `src`目录下新建一个`API`目录,用于存放调用数据的api
+3. `API/http.js`主要代码
+``` js
+import Qs from 'qs'
+import axios from "axios"
+
+axios.defaults.timeout = 20000;
+axios.defaults.withCredentials = true;
+axios.defaults.transformRequest = [function (data) {
+    data = Qs.stringify(data)
+    return data
+}]
+
+axios.defaults.transformResponse = [function (data) {
+    data = JSON.parse(data)
+    return data
+}]
+export default axios
+```
+4. `API/mapapi.js`
+```js
+import axios from "./http"
+
+//获取静态json文件数据
+function getvideojson(data, cb, errorCb) {
+    axios.get('mapdata/video.json', data).then(cb).catch(errorCb);
+}
+
+export default {
+    getvideojson   
+}
+```
+5. `MainMap.vue`中获取数据
+```js
+import Feature from 'ol/Feature'
+import Point from 'ol/geom/Point'
+import TileLayer from 'ol/layer/Tile'
+import VectorLayer from 'ol/layer/Vector'
+
+import MapApi from '../API/mapapi'
+
+data() {
+    return {
+        pointIcon: {
+            unitpoint: 'images/unit.png',
+            unitpoints: 'images/units.png',
+            video: 'images/video.png',
+            null: ''
+        },
+        Iconstyle: feature => {
+            return [
+                new Style({
+                    stroke: new Stroke({
+                        color: 'red',
+                        width: 2
+                    }),
+                    image: new Icon({
+                        offset: [0, 0],
+                        opacity: 1.0,
+                        rotateWithView: true,
+                        rotation: 0.0,
+                        scale: 1.0,
+                        size: [60, 40],
+                        anchor: [0.1, 0],
+                        anchorXUnits: 'fraction',
+                        anchorYUnits: 'pixels',
+                        src: this.pointIcon[feature.get('type')]
+                    })
+                })
+            ]
+        },
+        vectorSource: new VectorSource(),
+        vectorLayer: null
+    }
+},
+methods: {
+    addVideo() {
+        MapApi.getvideojson({unitid:1},response=> {
+            var data = response.data.data
+            console.log('data:', data)
+            if (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var code = data[i].code
+                    var name = data[i].name
+                    var lng = Number(data[i].lng)
+                    var lat = Number(data[i].lat)
+                    var point = new Point([lng, lat])
+                    var feature = new Feature({
+                        geometry: point,
+                        code: code,
+                        name: name,
+                        layername: 'videolayer',
+                        type: 'video'
+                    })
+                    feature.setId(code)
+                    feature.setStyle(this.Iconstyle(feature))
+                    this.vectorSource.addFeature(feature)
+                }
+            }
+        },error=> {
+            console.log(error)
+        })
     }
 }
 ```

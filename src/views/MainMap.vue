@@ -14,13 +14,18 @@
 <script>
     import 'ol/ol.css'
     import {Map,View} from 'ol'
+    import Feature from 'ol/Feature'
+    import Point from 'ol/geom/Point'
     import TileLayer from 'ol/layer/Tile'
     import VectorLayer from 'ol/layer/Vector'
     import TileArcGISRest from 'ol/source/TileArcGISRest'
     import XYZ from 'ol/source/XYZ'
     import { Vector as VectorSource } from 'ol/source'
     import Draw, { createBox } from 'ol/interaction/Draw'
+    import { Circle as CircleStyle, Icon, Style, Fill, Stroke, Text } from 'ol/style'
     import { projection, centerx, centery, zoom, streetmapurl, imagemapurl, mapmode } from '../mapconfig'
+
+    import MapApi from '../API/mapapi'
     export default {
         data() {
             return {
@@ -30,6 +35,36 @@
                     center: [centerx, centery],
                     zoom
                 }),
+                pointIcon: {
+                    unitpoint: 'images/unit.png',
+                    unitpoints: 'images/units.png',
+                    video: 'images/video.png',
+                    null: ''
+                },
+                Iconstyle: feature => {
+                    return [
+                        new Style({
+                            stroke: new Stroke({
+                                color: 'red',
+                                width: 2
+                            }),
+                            image: new Icon({
+                                offset: [0, 0],
+                                opacity: 1.0,
+                                rotateWithView: true,
+                                rotation: 0.0,
+                                scale: 1.0,
+                                size: [60, 40],
+                                anchor: [0.1, 0],
+                                anchorXUnits: 'fraction',
+                                anchorYUnits: 'pixels',
+                                src: this.pointIcon[feature.get('type')]
+                            })
+                        })
+                    ]
+                },
+                vectorSource: new VectorSource(),
+                vectorLayer: null,
                 drawSource: new VectorSource({}),
                 drawLayer: null,
                 streetmapLayer:null,        //街景图层
@@ -38,6 +73,7 @@
         },
         mounted() {
             this.initMap()
+            this.addVideo()
         },
         methods: {
             initMap() {  //初始化地图
@@ -72,12 +108,16 @@
                         })
                     })
                 }
+                this.vectorLayer = new VectorLayer({
+                    source: this.vectorSource,
+                    zIndex: 30
+                })
                 this.drawLayer = new VectorLayer({
                     source: this.drawSource
                 })
                 const map = new Map({
                     target: this.$refs.map,
-                    layers: [ this.streetmapLayer,this.imagemapLayer, this.drawLayer ],
+                    layers: [ this.streetmapLayer,this.imagemapLayer, this.drawLayer, this.vectorLayer ],
                     view: this.view
                 })
                 this.map = map
@@ -121,8 +161,35 @@
                 }                
                 this.map.addInteraction(this.draw)                                
             },
-            clearDraw() {
+            clearDraw() {  //清除画的图
                 this.drawSource.clear()
+            },
+            addVideo() {
+                MapApi.getvideojson({unitid:1},response=> {
+                    var data = response.data.data
+                    console.log('data:', data)
+                    if (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            var code = data[i].code
+                            var name = data[i].name
+                            var lng = Number(data[i].lng)
+                            var lat = Number(data[i].lat)
+                            var point = new Point([lng, lat])
+                            var feature = new Feature({
+                                geometry: point,
+                                code: code,
+                                name: name,
+                                layername: 'videolayer',
+                                type: 'video'
+                            })
+                            feature.setId(code)
+                            feature.setStyle(this.Iconstyle(feature))
+                            this.vectorSource.addFeature(feature)
+                        }
+                    }
+                },error=> {
+                    console.log(error)
+                })
             }
         }
     }
