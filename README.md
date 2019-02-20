@@ -460,3 +460,43 @@ methods: {
     }
 }
 ```
+
+## 九、当前鼠标的坐标
+1. 参考：https://openlayers.org/en/latest/examples/mouse-position.html , [MousePosition](https://openlayers.org/en/latest/apidoc/module-ol_control_MousePosition.html)
+2. 主要代码
+```js
+/*
+    <div class="mouseposition-box" ref="mouseposition"></div> <!--当前光标位置-->
+*/
+import MousePosition from 'ol/control/MousePosition'   // 当前鼠标位置
+import {defaults as defaultControls} from 'ol/control'
+import { format } from 'ol/coordinate'
+
+data() {
+    return {
+        mousepostionCtrl: null,
+    }
+},
+methods: {
+    initMap() {
+        ...
+        this.mousepostionCtrl = new MousePosition({
+            coordinateFormat: function(coordinate) {
+                return format(coordinate, '经度: {x}, 纬度: {y}', 4)
+            },
+            projection: 'EPSG:4326',
+            className: 'mouseposition',
+            target: this.$refs.mouseposition,
+            undefinedHTML: '&nbsp;'
+        })
+        const map = new Map({
+            controls: defaultControls().extend([this.mousepostionCtrl]),
+            target: this.$refs.map,
+            layers: [ this.streetmapLayer,this.imagemapLayer, this.drawLayer, this.vectorLayer ],
+            view: this.view
+        })
+        this.map = map
+        ...
+    }
+}
+```

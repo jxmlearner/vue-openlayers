@@ -8,6 +8,7 @@
         <div class="maptype" @click="changemap" ref="maptype"> <!-- 右下角街景和影像地图切换 -->
             <span ref="maptypetext">街景</span>
         </div>
+        <div class="mouseposition-box" ref="mouseposition"></div> <!--当前光标位置-->
     </div>
 </template>
 
@@ -23,6 +24,9 @@
     import { Vector as VectorSource } from 'ol/source'
     import Draw, { createBox } from 'ol/interaction/Draw'
     import { Circle as CircleStyle, Icon, Style, Fill, Stroke, Text } from 'ol/style'
+    import MousePosition from 'ol/control/MousePosition'   // 当前鼠标位置
+    import {defaults as defaultControls} from 'ol/control'
+    import { format } from 'ol/coordinate'
     import { projection, centerx, centery, zoom, streetmapurl, imagemapurl, mapmode } from '../mapconfig'
 
     import MapApi from '../API/mapapi'
@@ -68,7 +72,8 @@
                 drawSource: new VectorSource({}),
                 drawLayer: null,
                 streetmapLayer:null,        //街景图层
-                imagemapLayer: null         //影像图层
+                imagemapLayer: null,        //影像图层
+                mousepostionCtrl: null,
             }
         },
         mounted() {
@@ -108,6 +113,15 @@
                         })
                     })
                 }
+                this.mousepostionCtrl = new MousePosition({
+                    coordinateFormat: function(coordinate) {
+                        return format(coordinate, '经度: {x}, 纬度: {y}', 4)
+                    },
+                    projection: 'EPSG:4326',
+                    className: 'mouseposition',
+                    target: this.$refs.mouseposition,
+                    undefinedHTML: '&nbsp;'
+                })
                 this.vectorLayer = new VectorLayer({
                     source: this.vectorSource,
                     zIndex: 30
@@ -116,6 +130,7 @@
                     source: this.drawSource
                 })
                 const map = new Map({
+                    controls: defaultControls().extend([this.mousepostionCtrl]),
                     target: this.$refs.map,
                     layers: [ this.streetmapLayer,this.imagemapLayer, this.drawLayer, this.vectorLayer ],
                     view: this.view
@@ -266,4 +281,20 @@
         i { margin-right: 2px;}
     }
 }
+.mouseposition-box {
+    position: absolute;
+    right: 100px;
+    bottom: 10px;
+    z-index: 2;
+    >>>.mouseposition {        
+        line-height: 26px;
+        padding: 0 10px;
+        background: rgba(255,255,255,0.5);
+        font-size: 12px;
+        color: #333;
+        border-radius: 2px;
+        box-shadow: 1px 1px 2px rgba(0,0,0,0.3)
+    }
+}
+
 </style>
