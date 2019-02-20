@@ -169,11 +169,11 @@
                 let _this = this
                 this.selectInteraction.on('select', function(e) {
                     let feature = e.target.getFeatures().getArray()[0]
-                    console.log(feature)
+                    // console.log(feature)
                     if(!feature) return
                     var coordinates = feature.getGeometry().getCoordinates()
                     var layername = feature.get('layername')
-                    console.log(layername)
+                    // console.log(layername)
                     switch (layername) {
                         case 'videolayer':                            
                             _this.popup.setPosition(coordinates)

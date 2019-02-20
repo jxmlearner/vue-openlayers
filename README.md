@@ -502,3 +502,6 @@ methods: {
 ```
 ## 十、弹出框popup
 1. [popup参考](https://openlayers.org/en/latest/examples/popup.html),[select feature](https://openlayers.org/en/latest/examples/select-features.html)
+
+## 十一、整体效果
+![整体效果](./md/openlayers01.png)
