@@ -9,6 +9,10 @@
             <span ref="maptypetext">街景</span>
         </div>
         <div class="mouseposition-box" ref="mouseposition"></div> <!--当前光标位置-->
+        <div class="ol-popup" ref="popup"> <!-- 弹出窗口 -->
+            <a href="#" ref="popupCloser" class="ol-popup-closer" @click="closePopup"></a>
+            <div ref="popupContent">{{popupObj.content}}</div>
+        </div>
     </div>
 </template>
 
@@ -27,6 +31,9 @@
     import MousePosition from 'ol/control/MousePosition'   // 当前鼠标位置
     import {defaults as defaultControls} from 'ol/control'
     import { format } from 'ol/coordinate'
+    import Overlay from 'ol/Overlay'  //弹出窗和点击事件
+    import Select from 'ol/interaction/Select'
+    import {click, pointerMove, altKeyOnly} from 'ol/events/condition'
     import { projection, centerx, centery, zoom, streetmapurl, imagemapurl, mapmode } from '../mapconfig'
 
     import MapApi from '../API/mapapi'
@@ -74,6 +81,12 @@
                 streetmapLayer:null,        //街景图层
                 imagemapLayer: null,        //影像图层
                 mousepostionCtrl: null,
+                popup: null,
+                popupObj: {          // 弹出层的数据对象
+                    name: '',
+                    content: ''
+                },
+                selectInteraction: new Select()
             }
         },
         mounted() {
@@ -122,6 +135,13 @@
                     target: this.$refs.mouseposition,
                     undefinedHTML: '&nbsp;'
                 })
+                this.popup = new Overlay({
+                    element: this.$refs.popup,
+                    autoPan: true,
+                    autoPanAnimation: {
+                        duration: 250
+                    }
+                })
                 this.vectorLayer = new VectorLayer({
                     source: this.vectorSource,
                     zIndex: 30
@@ -133,9 +153,39 @@
                     controls: defaultControls().extend([this.mousepostionCtrl]),
                     target: this.$refs.map,
                     layers: [ this.streetmapLayer,this.imagemapLayer, this.drawLayer, this.vectorLayer ],
+                    overlays: [this.popup],
                     view: this.view
                 })
                 this.map = map
+                /* 鼠标停放事件 */
+                this.map.on('pointermove', e => {
+                    if (e.dragging) {
+                        return
+                    }
+                    var pixel = this.map.getEventPixel(e.originalEvent)
+                    this.mouseoverevt(pixel)
+                })
+                this.map.addInteraction(this.selectInteraction);
+                let _this = this
+                this.selectInteraction.on('select', function(e) {
+                    let feature = e.target.getFeatures().getArray()[0]
+                    console.log(feature)
+                    if(!feature) return
+                    var coordinates = feature.getGeometry().getCoordinates()
+                    var layername = feature.get('layername')
+                    console.log(layername)
+                    switch (layername) {
+                        case 'videolayer':                            
+                            _this.popup.setPosition(coordinates)
+                            let name = feature.get('name')
+                            _this.popupObj = {
+                                name,
+                                content: name
+                            }
+                            break
+                    }
+                    _this.selectInteraction.getFeatures().clear()
+                })
             },
             changemap() { //切换街景和影像地图
                 var mapname = this.$refs.maptypetext.innerHTML      
@@ -178,6 +228,37 @@
             },
             clearDraw() {  //清除画的图
                 this.drawSource.clear()
+            },
+            closePopup() {  //关闭popup
+                this.popup.setPosition(undefined)
+                this.$refs.popupCloser.blur()
+                return false
+            },
+            /* 鼠标停放事件逻辑 */
+            mouseoverevt: function(pixel) {
+                var feature = this.map.forEachFeatureAtPixel(pixel, function(feature) {
+                    return feature
+                })
+                var hit = this.map.hasFeatureAtPixel(pixel)                
+                if (feature) {                    
+                    this.map.getTarget().style.cursor = hit ? 'pointer': ''
+                    // var coordinates = feature.getGeometry().getCoordinates()
+                    // var layername = feature.get('layername')
+                    // console.log(layername)
+                    // switch (layername) {
+                    //     case 'videolayer':                            
+                    //         this.popup.setPosition(coordinates)
+                    //         let name = feature.get('name')
+                    //         this.popupObj = {
+                    //             name,
+                    //             content: name
+                    //         }
+                    //         break
+                    // }
+                } else {
+                    //this.popup.setPosition(undefined)
+                    this.map.getTarget().style.cursor = hit ? 'default' : ''
+                }
             },
             addVideo() {
                 MapApi.getvideojson({unitid:1},response=> {
@@ -296,5 +377,47 @@
         box-shadow: 1px 1px 2px rgba(0,0,0,0.3)
     }
 }
-
+/*弹出层样式*/
+.ol-popup {
+    position: absolute;
+    background-color: white;
+    -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    min-width: 280px;
+}
+.ol-popup:after, .ol-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+.ol-popup:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 48px;
+    margin-left: -10px;
+}
+.ol-popup:before {
+    border-top-color: #cccccc;
+    border-width: 11px;
+    left: 48px;
+    margin-left: -11px;
+}
+.ol-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+}
+.ol-popup-closer:after {
+    content: "✖";
+}
 </style>
