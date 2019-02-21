@@ -1,0 +1,188 @@
+body {
+    background: url(./images/map_bg.png) no-repeat;
+}
+
+.area-map-container {
+    height: 100%;
+    position: relative;
+}
+
+/*实时记录*/
+.realtime-records {
+    width: 386px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    &:before {
+        content: '';
+        position: absolute;
+        display: block;
+        width: 14px;
+        height: 106px;
+        left: -13px;
+        bottom: 120px;
+    }
+    &:after {
+        content: '';
+        position: absolute;
+        display: block;
+        width: 12px;
+        height: 124px;
+        right: -11px;
+        top: 50px;
+    }
+    h2 {
+        height: 40px;
+        padding-top: 10px;
+        line-height: 30px;
+        font-size: 16px;
+        color: #fff;
+        padding-left: 28px;
+    }
+    .records {
+        flex: 1;
+        padding: 0 14px;
+        display: flex;
+        flex-direction: column;
+        color: #fff;
+        font-size: 14px;
+        .tab-header {
+            padding-top: 8px;
+            width: 90%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            &:after {
+                content: '';
+                display: block;
+                position: absolute;
+                top: 100%;
+                width: 100%;
+                height: 0;
+                border-bottom: 2px solid rgba(3,85,178,.8);
+            }            
+            li {
+                flex: 1;
+                text-align: center;
+                font-size: 14px;
+                color: #fefefe;
+                a {
+                    display: block;
+                    height: 36px;
+                    line-height: 36px;
+                    padding: 0 10px;
+                    cursor: pointer;
+                    position: relative;
+                    &:after {
+                        content: '';
+                        display: block;
+                        position: absolute;
+                        left: 10%;
+                        bottom: -2px;
+                        width: 80%;
+                        z-index: 2;
+                    }
+                }
+                &.active {
+                    a {
+                        color: rgba(0,198,255,1);
+                        &:after {
+                            height: 2px;
+                            background:rgba(0,198,255,1);
+                            box-shadow: 0 -1px 5px rgba(0,198,255,1),0 1px 5px rgba(0,198,255,1);
+                        }
+                    }
+                }
+            }            
+        }
+        .tab-content {
+            flex: 1;
+            display: flex;            
+            flex-direction: column;
+            .data-info {
+                height: 40px;
+                line-height: 40px;
+                padding-left: 5%;
+                span {
+                    color: #00eaff;
+                    font-size: 16px;
+                    i {
+                        font-style: normal;
+                        font-size: 12px;
+                        margin-left: 2px;
+                    }
+                }
+            }
+            .content-item {
+                display: none;
+                height: 100%;
+                overflow: hidden; 
+                &.active {
+                    display: block;
+                }
+            }
+            .record-list {
+                flex: 1;                              
+                .record-item {
+                    display: flex;
+                    background: rgba(2,31,74,0.8);
+                    padding: 13px 10px 13px 13px;
+                    margin-bottom: 14px;
+                    .avatar {
+                        width: 98px;
+                        height: 86px;
+                        position: relative;
+                        top: 4px;
+                        img {
+                            width: 100%;
+                            height: 100%;
+                        }
+                        .text {
+                            position: absolute;
+                            left: 0;
+                            bottom: 0;
+                            line-height: 20px;
+                            text-align: center;
+                            width: 100%;
+                            background: rgba(0,22,54,0.5);
+                            text-align: center;
+                        }
+                    }
+                    .item-detail {
+                        flex: 1;
+                        span {
+                            display: inline-block;
+                            &.tit {
+                                color: rgba(255,255,255,0.5);
+                                width: 60px;
+                                text-align: right;
+                                margin: 0 12px;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+    .realtime-footer {
+        height: 42px;
+        position: relative;
+        .arrow-down {
+            display: block;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            background: url('./theme-light/images/arrow_down.png') no-repeat;
+            position: absolute;
+            left: 50%;
+            top: 5px;
+            margin-left: -11px;
+        }
+    }
+}

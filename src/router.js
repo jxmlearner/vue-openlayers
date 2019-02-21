@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import MainMap from './views/MainMap.vue'
+import MainMap from './views/MainMap'
+import AreaMap from './views/AreaMap'
 
 Vue.use(Router)
 
@@ -12,6 +13,11 @@ export default new Router({
       path: '/',
       name: 'map',
       component: MainMap
+    },
+    {
+      path:'/areamap',
+      name: 'areamap',
+      component: AreaMap
     }
   ]
 })
