@@ -1,5 +1,6 @@
 
-var streetmaponline = 'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer',   //在线街景
+// var streetmaponline = 'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer',   //在线街景     --浅色
+var streetmaponline = 'http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer',   //在线街景 --颜色更深
 imagemaponline = 'http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer',            //在线影像
 streetmapoffline = 'http://192.168.4.183/yangzhoustreet/{z}/{x}/{-y}.png',                                   //离线街景
 imagemapoffline = 'http://192.168.4.183/yangzhouimage/{z}/{x}/{-y}.png',                                     //离线影像

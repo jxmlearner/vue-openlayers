@@ -1,12 +1,22 @@
 <template>
     <div class="map-container">
         <div class="map" ref="map"></div>
-        <div class="maptools">
+        <!-- <div class="maptools">
             <a @click="drawRectangle"><i class="iconfont icon-rectangle"></i>画矩形</a>
             <a @click="clearDraw"><i class="iconfont icon-custom-clear"></i>清除</a>
-        </div>
+        </div> -->
         <div class="maptype" @click="changemap" ref="maptype"> <!-- 右下角街景和影像地图切换 -->
             <span ref="maptypetext">街景</span>
+        </div>
+        <div class="operation-tools">  <!-- 右下角的操作工具栏 -->
+            <a class="rect-search" title="矩形搜索" @click="drawRectangle"></a>
+            <a @click="clearDraw" title="清除矩形"><i class="iconfont icon-custom-clear"></i></a>
+            <a title="2D|3D切换">2D</a>
+            <a class="skywatch" title="打开立体云客户端"></a>
+            <div class="zoom-box">
+                <a class="zoom-plus" title="放大" @click="zoomout"></a>
+                <a class="zoom-reduce" title="缩小" @click="zoomin"></a>
+            </div>
         </div>
         <div class="mouseposition-box" ref="mouseposition"></div> <!--当前光标位置-->
         <div class="ol-popup" ref="popup"> <!-- 弹出窗口 -->
@@ -234,6 +244,22 @@
                 this.$refs.popupCloser.blur()
                 return false
             },
+            zoomout: function() {
+                var view = this.map.getView()
+                if (Number(view.getZoom()) < 19) {
+                    view.animate({
+                        zoom: view.getZoom() + 1
+                    })
+                }
+            },
+            zoomin: function() {
+                var view = this.map.getView()
+                if (Number(view.getZoom()) > 1) {
+                    view.animate({
+                        zoom: view.getZoom() - 1 
+                    })
+                }
+            },
             /* 鼠标停放事件逻辑 */
             mouseoverevt: function(pixel) {
                 var feature = this.map.forEachFeatureAtPixel(pixel, function(feature) {
@@ -299,6 +325,9 @@
 >>>.ol-attribution {
     display: none;
 }
+>>>.ol-zoom {
+    display: none;
+}
 .maptype {
     width: 80px;
     height: 60px;
@@ -362,6 +391,72 @@
         i { margin-right: 2px;}
     }
 }
+/*右下角的操作工具栏*/
+.operation-tools {
+    position: absolute;
+    right: 10px;
+    bottom: 100px;
+    font-size: 14px;
+}
+.operation-tools a {
+    display:block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    color: #fff;
+    border-radius: 2px;
+    background-color: rgba(3,93,178,1);
+    text-align: center;
+    margin:0 auto 2px;
+    cursor: pointer;
+    &.rect-search {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 6px;
+        background-image: url('../assets/images/rect-search.png');
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+    &.skywatch {
+        background-image: url('../assets/images/skywatch-icon.png');
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+    &:hover {
+        background-color: rgba(38,132,221,1);
+    }
+}
+.operation-tools .zoom-box {
+    width: 28px;
+    background-color: rgba(3,93,178,1);
+    border-radius: 2px;
+    margin: 0 auto;
+    a {
+        border-radius: none;
+        margin-bottom: none;
+        background-repeat: no-repeat;
+        background-position: center center;
+        &.zoom-plus {
+            background-image: url('../assets/images/zoom-plus.png')
+            margin-bottom: 1px;
+            position: relative;
+            &:after {
+                content:'';
+                position: absolute;
+                width: 60%;
+                height: 0;
+                left: 20%;
+                bottom: -1px;
+                border-bottom: 1px solid rgba(238,238,238,.16);
+            }
+        }
+        &.zoom-reduce {
+            background-image: url('../assets/images/zoom-reduce.png')
+        }
+    }
+}
+
+/* 当前光标的经纬度 */
 .mouseposition-box {
     position: absolute;
     right: 100px;
