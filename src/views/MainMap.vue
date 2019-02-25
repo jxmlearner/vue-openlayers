@@ -5,6 +5,10 @@
             <a @click="drawRectangle"><i class="iconfont icon-rectangle"></i>画矩形</a>
             <a @click="clearDraw"><i class="iconfont icon-custom-clear"></i>清除</a>
         </div> -->
+        <div class="operation-btns">
+            <a>黑名单预警</a>
+            <a>实时数据</a>
+        </div>
         <div class="maptype" @click="changemap" ref="maptype"> <!-- 右下角街景和影像地图切换 -->
             <span ref="maptypetext">街景</span>
         </div>
@@ -18,6 +22,8 @@
                 <a class="zoom-reduce" title="缩小" @click="zoomin"></a>
             </div>
         </div>
+        <!-- 统计数据 -->
+        <statistic-data />
         <div class="mouseposition-box" ref="mouseposition"></div> <!--当前光标位置-->
         <div class="ol-popup" ref="popup"> <!-- 弹出窗口 -->
             <a href="#" ref="popupCloser" class="ol-popup-closer" @click="closePopup"></a>
@@ -46,6 +52,7 @@
     import {click, pointerMove, altKeyOnly} from 'ol/events/condition'
     import { projection, centerx, centery, zoom, streetmapurl, imagemapurl, mapmode } from '../mapconfig'
 
+    import StatisticData from '../components/StatisticData'
     import MapApi from '../API/mapapi'
     export default {
         data() {
@@ -313,6 +320,9 @@
                     console.log(error)
                 })
             }
+        },
+        components: {
+            StatisticData
         }
     }
 </script>
@@ -391,6 +401,47 @@
         i { margin-right: 2px;}
     }
 }
+/*操作按钮*/
+.operation-btns {
+    position: absolute;
+	top: 20px;
+	right: 10px;
+	z-index: 6;
+	background: rgba(3,85,178,1);
+	box-shadow: 0px 4px 5px rgba(12,63,116,0.4);
+    font-size: 0;
+    a {
+        display: inline-block;
+        height: 34px;
+        line-height: 34px;
+        font-size:16px;
+        text-align: center;
+        cursor: pointer;
+        padding: 0 10px;
+        color:white;
+        margin-left: 1px;
+        position: relative;
+        &:hover {
+            color: rgba(255,210,0,1);
+        }
+        &:before {
+            content:'';
+            display: block;
+            position: absolute;
+            height: 56%;
+            border-left: 1px solid rgba(238,238,238,.16);
+            left: -1px;
+            top: 22%;
+        }
+        &:first-child {
+            margin-left: 0;
+            &:before {
+                border: none;
+            }
+        }
+    }
+}
+
 /*右下角的操作工具栏*/
 .operation-tools {
     position: absolute;
