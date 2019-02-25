@@ -42,7 +42,7 @@
             <div class="leftsmallbox sanfangtongji">
                 <h2>三防统计</h2>
                 <div class="content-container" style="height: 216px">
-                    <div ref="sanfangtongjiinfo">
+                    <div ref="sanfangtongjiinfo" style="width: 100%; height: 100%;">
 
                     </div>
                 </div>
@@ -118,10 +118,12 @@
     import '../assets/theme/theme-light/index.styl'
 
     import RealtimeRecords from '../components/RealtimeRecords'
+    import echarts from 'echarts'
     export default {
         data() {
             return {
-                closed: false
+                closed: false,
+                sanfangChart: null
             }
         },
         computed: {
@@ -129,9 +131,55 @@
                 return this.closed? 'closed':'opened'
             }
         },
+        mounted() {
+            this.sanfangChartInit()
+        },
         methods: {
             toggleOpenClose() {
                 this.closed = !this.closed
+            },
+            sanfangChartInit() {
+                var option = {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{b}<br>{c} ({d}%)",
+                        position: 'inside'
+                    },
+                    color: ['#73fff3','#2f46f0','#00a8ff'],
+                    legend: {
+                        bottom:'-5',
+                        textStyle:{
+                            color:'white'
+                        },
+                        x: 'center',
+                        data:[
+                            {name:'人防',icon:'circle'},
+                            {name:'物防',icon:'circle'},
+                            {name:'技防',icon:'circle'}
+                        ]
+                    },
+                    series: [
+                        {
+                            type:'pie',
+                            hoverOffset:5,
+                            center: ['50%','40%'],
+                            radius: ['50%', '70%'],
+                            avoidLabelOverlap: false,
+                            label: {
+                                color: '#fff',
+                                formatter: '{b}\n{d}%'
+                            },
+                            data:[
+                                {value:335, name:'人防'},
+                                {value:310, name:'物防'},
+                                {value:234, name:'技防'}
+                            ]
+                        }
+                    ]
+                }
+                var sanfangechart =  echarts.init(this.$refs.sanfangtongjiinfo);
+                sanfangechart.setOption(option, true)
+                this.sanfangChart = sanfangechart
             }
         },
         components: {
