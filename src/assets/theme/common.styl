@@ -5,8 +5,216 @@ body {
 .area-map-container {
     height: 100%;
     position: relative;
+    overflow: hidden;
 }
 
+/*工具条*/
+.tools-list {
+    position: absolute;
+    top: 20px;
+    right: 420px;
+    // left: 50%;
+    // transform: translateX(-50%);
+    display: flex;
+    font-size: 14px;
+    color: #fff;
+    font-family: "微软雅黑"
+}
+.control-tools {
+    display: flex; 
+    margin-right: 4px;   
+}
+.control-tools> a {
+    text-align: center;
+    height: 37px;
+    line-height: 37px;
+    background-color: rgba(3,169,255,1);
+    border-radius: 4px;
+    padding: 0 10px;
+    margin-right: 2px;
+    cursor: pointer;
+    white-space:nowrap;
+}
+.open-close {
+    width: 20px;
+    height: 18px;
+    margin-top: 10px;
+    background-image: url(./images/open_close_icon.png);
+    background-repeat: no-repeat;
+}
+.open-close.closed {
+    background-position: 0 -18px;
+}
+.control-tools> a:last-child {
+    margin-right: 0;
+}
+.check-tools {
+    display: flex;
+    background: rgba(3,85,178,.8);
+    box-shadow: 0 1px 1px rgba(135,135,135,.38);
+    line-height: 37px;
+}
+.mapcheck {
+    position: relative;
+    margin-right: 1px;
+}
+.mapcheck:after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 27%;
+    height: 50%;
+    border-right: 1px solid rgba(2,148,224,.3);
+}
+.mapcheck:last-child {
+    margin-right:0;
+}
+.mapcheck:last-child:after {
+    border-right: none;
+}
+.mapcheck:hover {
+    color: rgba(0,198,255,1);
+}
+.customcheckbox {
+    padding: 0 12px;    
+}
+.customcheckbox label {
+    display: block;
+    text-align:left;
+	position: relative;
+	cursor:pointer;
+    white-space:nowrap;
+}
+.customcheckbox label input{
+	width: 15px;
+	height: 15px;
+    border: 1px solid #fff;
+    background: #fff;
+    opacity: 0;
+}
+.customcheckbox .spot{
+	width:10px;
+	height:10px;
+	background:url("images/customcheckbox.png") no-repeat;  /*默认的样式图片*/
+	position: absolute;
+	top:50%;
+    margin-top: -5px;
+	left:3px;
+	z-index:5;
+}
+.customcheckbox input:checked + .spot{
+    background-position: 0 -10px;
+}
+
+/*左侧信息窗口样式*/
+.left-win-box {
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    color: #fff;   
+    width: 374px;
+}
+.split-box { height: 20px;}
+.leftsmallbox {
+    flex: 1;
+    padding: 0 12px;
+    background:url('./theme-light/images/areamap_module_bg.png') no-repeat center / 100% 100%;
+}
+.leftsmallbox> h2 {
+    height: 40px;
+    padding-top: 8px;
+    line-height: 30px;
+    font-size: 16px;
+    color: #fff;
+    padding-left: 24px;
+    font-weight: normal;   
+}
+.leftsmallbox .content-container {
+    padding: 0 20px;
+}
+.status-list span {
+    display: inline-block;
+    text-align: center;
+    border-radius: 4px;
+    background: rgba(0,155,227,1);
+    font-size: 12px;
+    padding: 1px 10px;
+}
+.status-list span.un-handled{
+    margin-left: 10px;
+    background: rgba(0,155,227,.46);
+}
+.alarm-data-list {
+    padding-top: 8px;
+    font-size: 14px;
+}
+.alarm-data-list .alarm-item {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+.alarm-item .alarm-tit {
+    text-align: right;
+    width: 110px;
+    margin-right: 15px;
+}
+.virtual-total {
+    font-size: 0;
+    flex: 1;
+}
+.virtual-total span {
+    display: inline-block;
+    text-align: center;
+    background: rgba(0,155,227,1);
+    font-size: 10px;
+    padding: 0 10px;
+}
+.virtual-total span.un-handled{
+    background: rgba(0,155,227,.46);
+}
+
+
+.left-win-box.closed {   
+    animation: leftSlideOut .5s forwards;
+}
+.left-win-box.opened {   
+    animation: leftSlideIn .5s forwards;
+}
+
+@keyframes leftSlideIn {
+    from {transform: translateX(-110%) }
+    to {
+        transform: translateX(0);
+    }
+}
+@keyframes leftSlideOut {
+    from {transform: translateX(0) }
+    to {
+        transform: translateX(-110%);
+    }
+}
+
+@keyframes slideToRight {
+    from { transform: translateX(0); }
+    to {
+        transform: translateX(110%)
+    }
+}
+@keyframes slideToLeft {
+    from { transform: translateX(110%); }
+    to {
+        transform: translateX(0)
+    }
+}
+.realtime-records.closed {    
+    animation: slideToRight .5s forwards;
+}
+.realtime-records.opened {    
+    animation: slideToLeft .5s forwards;
+}
 /*实时记录*/
 .realtime-records {
     width: 386px;
@@ -41,6 +249,7 @@ body {
         font-size: 16px;
         color: #fff;
         padding-left: 28px;
+        font-weight: normal;
     }
     .records {
         flex: 1;
@@ -120,14 +329,18 @@ body {
             }
             .content-item {
                 display: none;
-                height: 100%;
-                overflow: hidden; 
+                overflow: auto;
+                &::-webkit-scrollbar{  
+                    height: 0;
+                    width: 0;
+                    color: transparent;
+                }
                 &.active {
                     display: block;
                 }
             }
             .record-list {
-                flex: 1;                              
+                flex: 1;                            
                 .record-item {
                     display: flex;
                     background: rgba(2,31,74,0.8);

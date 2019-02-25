@@ -387,7 +387,7 @@
     border-radius: 4px;
     border: 1px solid #cccccc;
     bottom: 12px;
-    left: -50px;
+    left: -40px;
     min-width: 280px;
 }
 .ol-popup:after, .ol-popup:before {

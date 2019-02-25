@@ -8,7 +8,7 @@
             <div class="tab-content">                
                 <div class="content-item door-content" :class="{'active': curTabIndex === 0}">
                     <div class="data-info">今日开门记录：<span>27,164<i>次</i></span></div>
-                    <div class="record-list">
+                    <div class="record-list">                      
                         <div class="record-item">
                             <div class="avatar">
                                 <img src="images/avatar01.png" />

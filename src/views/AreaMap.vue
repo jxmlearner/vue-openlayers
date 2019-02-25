@@ -1,7 +1,115 @@
 <template>
     <div class="area-map-container">
         <div class="map"></div>
-        <realtime-records />
+        <realtime-records :class="openCloseClass" />
+        <div class="tools-list">
+            <div class="control-tools">
+                <a>数据信息</a>
+                <a @click="toggleOpenClose"><div class="open-close" :class="{'closed':closed}"></div></a>
+                <a>3D</a>
+            </div>
+            <div class="check-tools">
+                <div  class='mapcheck customcheckbox' >
+                    <label><input type="checkbox"><i class="spot"></i> 摄像头 </label>
+                </div>
+                <div  class='mapcheck customcheckbox'>
+                    <label><input type="checkbox"><i class="spot"></i> 人防分布 </label>
+                </div>
+                <div  class='mapcheck customcheckbox' >
+                    <label><input type="checkbox"><i class="spot"></i> 对讲门禁 </label>
+                </div>
+                <div  class='mapcheck customcheckbox' >
+                    <label><input type="checkbox"><i class="spot"></i> 车场记录 </label>
+                </div>
+                <div  class='mapcheck customcheckbox' >
+                    <label><input type="checkbox"><i class="spot"></i> 周边配套 </label>
+                </div>
+                <div  class='mapcheck customcheckbox'>
+                    <label><input type="checkbox"><i class="spot"></i> 安防巡更路线 </label>
+                </div>
+            </div>
+        </div>
+        <div class="left-win-box" :class="openCloseClass">
+            <!-- 一标N实 -->
+            <div class="leftsmallbox yibiaonshi">
+                <h2>一标N实</h2>
+                <div class="content-container">
+
+                </div>
+            </div>
+            <div class="split-box">&nbsp;</div>
+            <!-- 三防统计 -->
+            <div class="leftsmallbox sanfangtongji">
+                <h2>三防统计</h2>
+                <div class="content-container" style="height: 216px">
+                    <div ref="sanfangtongjiinfo">
+
+                    </div>
+                </div>
+            </div>
+            <div class="split-box">&nbsp;</div>
+            <!-- 今日实有警情事件及处置情况 -->
+            <div class="leftsmallbox alarmtoday">
+                <h2>今日实有警情事件及处置情况</h2>
+                <div class="content-container">
+                    <div class="status-list">
+                        <span class="handled">已处置</span>
+                        <span class="un-handled">未处置</span>
+                    </div>
+                    <div class="alarm-data-list">
+                        <div class="alarm-item">
+                            <div class="alarm-tit">人员黑名单</div>
+                            <div class="virtual-total">
+                                <span class="handled" style="width: 60%;">186</span>
+                                <span class="un-handled">43</span>
+                            </div>
+                        </div>
+                        <div class="alarm-item">
+                            <div class="alarm-tit">车辆黑名单</div>
+                            <div class="virtual-total">
+                                <span class="handled">32</span>
+                                <span class="un-handled">12</span>
+                            </div>
+                        </div>
+                        <div class="alarm-item">
+                            <div class="alarm-tit">周界预警</div>
+                            <div class="virtual-total">
+                                <span class="handled">48</span>
+                                <span class="un-handled">23</span>
+                            </div>
+                        </div>
+                        <div class="alarm-item">
+                            <div class="alarm-tit">陌生人尾随预警</div>
+                            <div class="virtual-total">
+                                <span class="handled">48</span>
+                                <span class="un-handled">23</span>
+                            </div>
+                        </div>
+                        <div class="alarm-item">
+                            <div class="alarm-tit">车辆黑名单</div>
+                            <div class="virtual-total">
+                                <span class="handled">32</span>
+                                <span class="un-handled">12</span>
+                            </div>
+                        </div>
+                        <div class="alarm-item">
+                            <div class="alarm-tit">周界预警</div>
+                            <div class="virtual-total">
+                                <span class="handled">48</span>
+                                <span class="un-handled">23</span>
+                            </div>
+                        </div>
+                        <div class="alarm-item">
+                            <div class="alarm-tit">陌生人尾随预警</div>
+                            <div class="virtual-total">
+                                <span class="handled">48</span>
+                                <span class="un-handled">23</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -11,6 +119,21 @@
 
     import RealtimeRecords from '../components/RealtimeRecords'
     export default {
+        data() {
+            return {
+                closed: false
+            }
+        },
+        computed: {
+            openCloseClass() {
+                return this.closed? 'closed':'opened'
+            }
+        },
+        methods: {
+            toggleOpenClose() {
+                this.closed = !this.closed
+            }
+        },
         components: {
             RealtimeRecords
         }
