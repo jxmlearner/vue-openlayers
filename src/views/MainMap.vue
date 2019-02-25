@@ -7,7 +7,7 @@
         </div> -->
         <div class="operation-btns">
             <a>黑名单预警</a>
-            <a>实时数据</a>
+            <a @click="openRealTimeCreate">实时数据</a>
         </div>
         <div class="maptype" @click="changemap" ref="maptype"> <!-- 右下角街景和影像地图切换 -->
             <span ref="maptypetext">街景</span>
@@ -24,6 +24,7 @@
         </div>
         <!-- 统计数据 -->
         <statistic-data />
+        <realalarm :showflag="realTimeWinStatus" @close="closeComDialog" />
         <div class="mouseposition-box" ref="mouseposition"></div> <!--当前光标位置-->
         <div class="ol-popup" ref="popup"> <!-- 弹出窗口 -->
             <a href="#" ref="popupCloser" class="ol-popup-closer" @click="closePopup"></a>
@@ -53,6 +54,7 @@
     import { projection, centerx, centery, zoom, streetmapurl, imagemapurl, mapmode } from '../mapconfig'
 
     import StatisticData from '../components/StatisticData'
+    import realalarm from '../components/realalarm'
     import MapApi from '../API/mapapi'
     export default {
         data() {
@@ -103,7 +105,8 @@
                     name: '',
                     content: ''
                 },
-                selectInteraction: new Select()
+                selectInteraction: new Select(),
+                realTimeWinStatus: false,  //实时新增窗口显示与否
             }
         },
         mounted() {
@@ -319,10 +322,17 @@
                 },error=> {
                     console.log(error)
                 })
+            },
+            openRealTimeCreate() { // 弹出实时新增窗口
+                this.realTimeWinStatus = true
+            },
+            closeComDialog(winWhichStatus) {
+                this[winWhichStatus] = false
             }
         },
         components: {
-            StatisticData
+            StatisticData,
+            realalarm
         }
     }
 </script>
