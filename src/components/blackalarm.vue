@@ -48,7 +48,7 @@
 
 <style scoped lang="stylus">
 .blackalarm{
-	top:80px;
+	top:60px;
 	right:10px;
 	width:260px;
 	position: absolute;
