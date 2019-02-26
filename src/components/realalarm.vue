@@ -82,7 +82,6 @@
 	position: absolute;
     z-index: 10;
     font-size: 12px;
-	background-size: 100% 100%;
 }
 .wrap-box {
     display: flex;
