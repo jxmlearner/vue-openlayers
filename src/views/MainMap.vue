@@ -8,6 +8,7 @@
         <div class="operation-btns">
             <a @click="openBlackAlarm">黑名单预警</a>
             <a @click="openRealTimeCreate">实时数据</a>
+            <router-link to="/areamap">三维地图</router-link>
         </div>
         <div class="maptype" @click="changemap" ref="maptype"> <!-- 右下角街景和影像地图切换 -->
             <span ref="maptypetext">街景</span>

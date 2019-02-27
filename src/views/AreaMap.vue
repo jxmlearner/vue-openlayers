@@ -140,10 +140,27 @@
             },
             sanfangChartInit() {
                 var option = {
+                    // title: {
+                    //     text: '人防',
+                    //     left: 'center',
+                    //     top: '30%',
+                    //     textStyle: {
+                    //         fontWeight: 'normal',
+                    //         color: '#1e88e5',
+                    //         fontSize: '14'
+                    //     },
+                    //     subtext:'120',
+                    //     subtextStyle: {
+                    //         fontWeight: 'normal',
+                    //         color: '#ffffff',
+                    //         fontSize: '22'
+                    //     }
+                    // },
                     tooltip: {
-                        trigger: 'item',
+                        trigger: 'none',
+                        //trigger: 'item',
                         formatter: "{b}<br>{c} ({d}%)",
-                        position: 'inside'
+                        //position: 'inside'
                     },
                     color: ['#73fff3','#2f46f0','#00a8ff'],
                     legend: {
@@ -158,7 +175,44 @@
                             {name:'技防',icon:'circle'}
                         ]
                     },
-                    series: [
+                    series: [                        
+                        {
+                            type:'pie',
+                            hoverOffset:5,
+                            center: ['50%','40%'],
+                            radius: ['50%', '70%'],
+                            avoidLabelOverlap: false,
+                            zlevel: 1,
+                            label: {
+                                show: false,
+                                position: 'center',
+                                lineHeight:20,                                
+                                formatter: '{n|{b}}\n{w|{c}}',
+                                rich: {
+                                    n: {   
+                                        color: '#1e88e5',                                     
+                                        fontSize: '12'
+                                    },
+                                    w: {
+                                        fontSize: '22',
+                                        color: '#fff'
+                                    }
+                                }                               
+                            },
+                            emphasis: {
+                                label: {
+                                    show: true
+                                }
+                            },
+                            labelLine: {
+                                show: false
+                            },
+                            data:[
+                                {value:335, name:'人防'},
+                                {value:310, name:'物防'},
+                                {value:234, name:'技防'}
+                            ]
+                        },
                         {
                             type:'pie',
                             hoverOffset:5,
@@ -180,6 +234,13 @@
                 var sanfangechart =  echarts.init(this.$refs.sanfangtongjiinfo);
                 sanfangechart.setOption(option, true)
                 this.sanfangChart = sanfangechart
+                let _this = this
+                // this.sanfangChart.on('mouseover', function (params) {
+                //     console.log(params)
+                //     setTimeout(()=>{
+                //         _this.sanfangChart.setOption({title:{text:`${params.name}`,subtext:`${params.value}`}})
+                //     },20)                    
+                // })
             }
         },
         components: {

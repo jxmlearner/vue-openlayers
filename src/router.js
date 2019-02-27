@@ -18,6 +18,10 @@ export default new Router({
       path:'/areamap',
       name: 'areamap',
       component: AreaMap
+    },
+    {
+      path: '*',
+      component: () => import('@/views/Error.vue') 
     }
   ]
 })
