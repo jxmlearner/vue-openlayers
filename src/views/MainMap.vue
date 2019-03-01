@@ -116,6 +116,7 @@
         mounted() {
             this.initMap()
             this.addVideo()
+            this.getAreaData()
         },
         methods: {
             initMap() {  //初始化地图
@@ -303,7 +304,7 @@
             addVideo() {
                 MapApi.getvideojson({unitid:1},response=> {
                     var data = response.data.data
-                    console.log('data:', data)
+                    //console.log('data:', data)
                     if (data) {
                         for (var i = 0; i < data.length; i++) {
                             var code = data[i].code
@@ -324,6 +325,24 @@
                         }
                     }
                 },error=> {
+                    console.log(error)
+                })
+            },
+            getAreaData() {
+                let postData = {
+                    "command": "get",
+                    "body": {
+                        "data": {
+                            "max_longitude": 118.071489,
+                            "max_latitude": 36.916456,
+                            "min_longitude": 117.151624,
+                            "min_latitude": 36.460825
+                        }
+                    }
+                }
+                MapApi.getareadata(postData,response => {
+                    console.log(response)
+                }, error => {
                     console.log(error)
                 })
             },

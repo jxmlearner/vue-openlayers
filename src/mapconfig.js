@@ -13,7 +13,7 @@ minzoom = 8,
 maxzoom = 19,
 linecolor = '#009cfe',  //轨迹线颜色
 linewidth = 3,
-apiAddr = 'http://192.168.4.167:8090/api';    //调用数据的接口地址
+apiAddr = 'http://192.168.0.224:13800/';    //调用数据的接口地址
 
 const streetmapurl = mapmode === 1?  streetmaponline: streetmapoffline    //街景瓦片服务地址(根据是在线还是离线使用不同的地址)
 const imagemapurl = mapmode ===1? imagemaponline: imagemapoffline         //影像瓦片服务地址

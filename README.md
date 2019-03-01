@@ -505,3 +505,4 @@ methods: {
 
 ## 十一、整体效果
 ![整体效果](./md/openlayers01.png)
+![改版后的效果](./md/openlayers02.png)

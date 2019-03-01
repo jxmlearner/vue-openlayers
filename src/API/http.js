@@ -11,10 +11,10 @@ let instance = axios.create()
 instance.defaults.timeout = 20000;
 
 // 自动发送cookie中的认证信息
-instance.defaults.withCredentials = true;
+//instance.defaults.withCredentials = true;
 
 instance.defaults.transformRequest = [function (data) {
-    data = Qs.stringify(data)
+    data = JSON.stringify(data)
     return data
 }]
 
