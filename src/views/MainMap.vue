@@ -238,13 +238,19 @@
                     let _this = this
                     this.draw.on('drawend', function(event) {
                         var feat = event.feature;
-                        var geometry = feat.getGeometry();
-                        var coords = geometry.getCoordinates();  //获取取经纬度坐标点
+                        var geom = feat.getGeometry();
+                        var coords = geom.getCoordinates();  //获取取经纬度坐标点
                         console.log(coords)
                         //var smoothened = makeSmooth(coords, parseInt(numIterations.value, 10) || 5);
                         //geometry.setCoordinates(smoothened);
-                        if (geometry.intersectsCoordinate([119.3978, 32.3955])) {  //判断某个坐标点是否处在所画的矩形区域之中
+                        if (geom.intersectsCoordinate([119.3978, 32.3955])) {  //判断某个坐标点是否处在所画的矩形区域之中
                             console.log('[119.3978, 32.3955]处在你画的区域之中')
+                        }
+                        let obj = {
+                            "min_longitude": geom.extent_[0],
+                            "min_latitude": geom.extent_[1],
+                            "max_longitude": geom.extent_[2],
+                            "max_latitude": geom.extent_[3]						
                         }
                         _this.map.removeInteraction(_this.draw)
                     })
